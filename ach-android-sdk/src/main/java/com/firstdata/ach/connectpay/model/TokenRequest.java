@@ -11,7 +11,7 @@ public class TokenRequest {
 	String subscriberId;
 	
 	@JsonProperty("transaction_id")
-	String pwmbTransactionId; 
+	String payWithMyBankTransactionId;
 	
 	@JsonProperty("first_name")
 	String firstName;
@@ -29,11 +29,11 @@ public class TokenRequest {
 	public void setSubscriberId(String subscriberId) {
 		this.subscriberId = subscriberId;
 	}
-	public String getPwmbTransactionId() {
-		return pwmbTransactionId;
+	public String getPayWithMyBankTransactionId() {
+		return payWithMyBankTransactionId;
 	}
-	public void setPwmbTransactionId(String pwmbTransactionId) {
-		this.pwmbTransactionId = pwmbTransactionId;
+	public void setPayWithMyBankTransactionId(String payWithMyBankTransactionId) {
+		this.payWithMyBankTransactionId = payWithMyBankTransactionId;
 	}
 	public String getFirstName() {
 		return firstName;

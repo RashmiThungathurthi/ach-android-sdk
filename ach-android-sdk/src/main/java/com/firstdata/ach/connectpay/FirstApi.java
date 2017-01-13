@@ -35,9 +35,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import paywithmybank.com.android.sdk.PayWithMyBank;
-import paywithmybank.com.android.sdk.PayWithMyBankCallback;
-import paywithmybank.com.android.sdk.PayWithMyBankPanel;
+
 import retrofit2.adapter.rxjava.HttpException;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 import rx.Observable;
@@ -46,6 +44,10 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
+
+import paywithmybank.com.android.sdk.PayWithMyBank;
+import paywithmybank.com.android.sdk.PayWithMyBankCallback;
+import paywithmybank.com.android.sdk.PayWithMyBankPanel;
 
 
 public class FirstApi {
@@ -92,7 +94,7 @@ public class FirstApi {
      * @return TokenResponse
      * @URL v1/connectpay/consumer/enrollment
      */
-    public Observable<TokenResponse> enrollRegular(EnrollmentRequest enrollmentRequest) {
+    public Observable<TokenResponse> performRegularEnrollment(EnrollmentRequest enrollmentRequest) {
         return enrollmentService.create(enrollmentRequest).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).onErrorResumeNext(new Func1<Throwable, Observable<? extends TokenResponse>>() {
             @Override
             public Observable<? extends TokenResponse> call(Throwable throwable) {
@@ -118,15 +120,15 @@ public class FirstApi {
         });
     }
     /**
-     * Call enrollment with PWMB
+     * Call enrollment with Pay With My Bank
      *
      * @param enrollmentRequest
      * @return TokenResponse
      * @URL v1/connectpay/consumer/enrollment/pwmb
      */
-    private Observable<TokenResponse> enrollPWMB(EnrollmentRequest enrollmentRequest) {
+    private Observable<TokenResponse> enrollPayWithMYBank(EnrollmentRequest enrollmentRequest) {
 
-        return enrollmentService.createWithPWMB(enrollmentRequest).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).onErrorResumeNext(new Func1<Throwable, Observable<? extends TokenResponse>>() {
+        return enrollmentService.createWithPayWithMyBank(enrollmentRequest).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).onErrorResumeNext(new Func1<Throwable, Observable<? extends TokenResponse>>() {
             @Override
             public Observable<? extends TokenResponse> call(Throwable throwable) {
                 ErrorResponse errorResponse = null;
@@ -239,7 +241,7 @@ public class FirstApi {
         });
     }
 
-    public void enrollPWMB(final ViewGroup view, final Activity act,final String callType,final String env,final String returnURL,final EnrollmentCallback enrollmentCallback) {
+    public void performPayWithMyBankEnrollment(final ViewGroup view, final Activity act,final String callType,final String env,final String returnURL,final EnrollmentCallback enrollmentCallback) {
         final EditText editTextName = new EditText(act);
         final LinearLayout linearLayout = new LinearLayout(act);
         EstablishRequest establishRequest = new EstablishRequest();
@@ -284,11 +286,7 @@ public class FirstApi {
 
     }
 
-    /**
-     * Call pay with my bank establish call
-     *
-     * @param returnEstablishData
-     */
+
     private void createPayWithMyBank( Map<String, String> returnEstablishData,ViewGroup view, final Activity act,final String callType, final String returnURL,final EnrollmentCallback enrollmentCallback) {
 
         PayWithMyBank payWithMyBank = new PayWithMyBankPanel(act);
@@ -469,7 +467,7 @@ public class FirstApi {
             public void onNext(ValidateResponse validateResponse) {
                 //progressDialog.dismiss();
                 EnrollmentRequest enrollmentRequest = populateEnrollment(validateResponse);
-                callEnrollmentWithPWMB(enrollmentRequest, act, enrollmentCallback);
+                callEnrollmentWithPayWithMyBank(enrollmentRequest, act, enrollmentCallback);
 
             }
         });
@@ -481,9 +479,9 @@ public class FirstApi {
      *
      * @param req
      */
-    private void callEnrollmentWithPWMB(EnrollmentRequest req,final Activity act,final EnrollmentCallback enrollmentCallback) {
+    private void callEnrollmentWithPayWithMyBank(EnrollmentRequest req,final Activity act,final EnrollmentCallback enrollmentCallback) {
 
-        enrollPWMB(req).doOnSubscribe(new Action0() {
+        enrollPayWithMYBank(req).doOnSubscribe(new Action0() {
             @Override
             public void call() {
                 // progressDialog = ProgressDialog.show(act, "Processing Enrollment call", "Please Wait processing Enrollment call", true, false);
@@ -496,7 +494,7 @@ public class FirstApi {
 
             @Override
             public void onError(Throwable e) {
-                Log.d("Error","PWMB enrollment error");
+                Log.d("Error","PayWithMyBank enrollment error");
                 if (e instanceof ErrorResponse) {
                     ErrorResponse error = (ErrorResponse) e;
                     enrollmentCallback.onFailure(error);
@@ -525,7 +523,7 @@ public class FirstApi {
      */
     private EnrollmentRequest populateEnrollment(ValidateResponse res) {
         EnrollmentRequest enrollmentRequest = new EnrollmentRequest();
-        enrollmentRequest.setPwmbTransactionId(res.getTckObj().getTransactionId());
+        enrollmentRequest.setPayWithMyBankTransactionId(res.getTckObj().getTransactionId());
         String name = res.getTckObj().getName();
         String[] first_last_names = name.split("\\s");
         enrollmentRequest.setFirstName(first_last_names[0]);

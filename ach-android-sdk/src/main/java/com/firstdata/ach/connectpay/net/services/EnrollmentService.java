@@ -20,7 +20,7 @@ public interface EnrollmentService {
 
     @POST("v1/ach/consumer/enrollment/pwmb")
     @Headers({"Content-Type:application/json"})
-    Observable<TokenResponse> createWithPWMB(@Body EnrollmentRequest request);
+    Observable<TokenResponse> createWithPayWithMyBank(@Body EnrollmentRequest request);
 
     @POST("v1/ach/consumer/enrollment/baa")
     @Headers({"Content-Type:application/json"})
